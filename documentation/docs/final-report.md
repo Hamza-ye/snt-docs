@@ -6,9 +6,9 @@
 
 **Challenge:** The National Malaria Control Program (NMCP) in Yemen faces significant challenges in analyzing and utilizing its vast data on malaria control activities due to inconsistencies in data formats, codes, and collection methods. This lack of data accessibility and quality hinders effective program evaluation, intervention targeting, and resource allocation.
 
-**Solution:** This project undertook a comprehensive data mapping initiative to consolidate and structure all NMCP activity data into a unified format. Master lists for key entities (villages, health facilities, community health volunteers) were established, and data from various sources (ITN distribution, IRS campaigns, case reports, etc.) were reviewed, cleaned, and merged with these master lists. Data visualization tools were developed to facilitate insightful analysis of trends, intervention effectiveness, and program progress.
+**Approach:** The project used a Collaborative Approach Engaging a cross-functional team to collaboratively address inconsistencies in data formats, Actively involving *Risk analysis team* in harmonization decisions, ensuring alignment with program goals, and Iteratively refining entity relationships based on feedback from them and NMCP management. The collaborative approach has resulted in a coherent dataset that reflects the collective expertise of the team.
 
-**Results:** The project successfully mapped all NMCP activity data into a structured format, significantly improving data accessibility and quality. Data completeness and accuracy metrics saw substantial improvements, and the established data model allows for comprehensive analysis across different entities and activities. Data visualization dashboards now provide real-time insights into key malaria control indicators, enabling informed decision-making for program optimization and resource allocation.
+**Result:** This project successfully mapped all NMCP activity data into a structured format, significantly improving data accessibility and quality. Data completeness and accuracy metrics saw substantial improvements, and the established data model allows for comprehensive analysis across different entities and activities. Data visualization dashboards now provide real-time insights into key malaria control indicators, enabling informed decision-making for program optimization and resource allocation. Any Future data can be easily checked, validated, cleaned, and merged using the automated solution and the pipeline developed in this project.
 
 **Impact:** This project empowers the NMCP with a robust data foundation for effective malaria control efforts. Improved data accessibility and quality will lead to:
 
@@ -25,7 +25,7 @@
 
 By leveraging the foundation established by this project, the NMCP can accelerate its progress towards a malaria-free future in Yemen.
 
-## Introduction 2
+## Introduction
 
 Malaria remains a significant public health threat in Yemen, with 150K cases reported annually. Effective control requires a comprehensive understanding of the disease dynamics, intervention effectiveness, and resource allocation strategies. However, the National Malaria Control Program (NMCP) faces significant challenges in utilizing its vast data on malaria control activities due to:
 
@@ -35,51 +35,126 @@ Malaria remains a significant public health threat in Yemen, with 150K cases rep
 
 Recognizing these challenges, the NMCP embarked on a critical initiative to map all its activity data into a unified, structured format. This project aimed to:
 
-* **Create master lists:** Develop standardized lists of key entities involved in malaria control, such as villages, health facilities, and community health volunteers.
-* **Clean and merge data:** Review, clean, and merge data from various sources, ensuring consistency and compatibility with the master lists.
+* **Create master lists:** Review and Update the standardized lists available of key entities involved in malaria control, such as villages, health facilities, and community health volunteers. and develop the missing ones needed for the mapping process.
+* **Connect/Define Catchment of each health facilities:** connect health facilities with their corresponding catchment villages. Building on an Existing mapping and utilizing a data-driven approach and robust methodologies, to establish a detailed catchment map that empowers informed resource allocation and optimizes service delivery within the region.
+* **Automated Data Pipelines (Pentaho and Python-Powered):** Implement lately to streamlined data processing and maintained data integrity throughout the analysis by employing Pentaho to orchestrate data extraction, and transformation processes. create scripts to address some data inconsistencies, including standardization, and normalization.
+* **Clean and merge data:** Review, clean, and merge data routine/not routine data from various sources, ensuring consistency and compatibility with the master lists.
 * **Develop data visualization tools:** Create interactive dashboards and reports to visualize trends, analyze intervention effectiveness, and track progress towards malaria control goals.
+* **Implement testing:** to guarantee data integrity and consistency before merging into the production Database.
 
 This report details the methodology, results, and impact of this data mapping project. It highlights the significant improvements in data accessibility, quality, and utilization, paving the way for enhanced malaria control efforts in Yemen.
 
 ## 2. Methodology
 
-**2.1 Data Sources**
+### 2.1 Data Sources
 
 The project integrated data from the following primary sources:
 
-* **Insecticide-treated nets (ITNs) data:** Excel spreadsheets with records of ITN distribution campaigns, including village codes, household counts, and net quantities distributed. Inconsistencies observed in village code formats and occasional missing household counts.
-* **Indoor residual spraying (IRS) data:** CSV files with records of sprayed structures, spray dates, insecticides used, and personnel involved. Inconsistencies noted in date formats and variations in personnel names.
-* **Larval source management (LSM) data:** Paper-based forms with records of breeding site identification, treatment methods, and dates of intervention. Challenges included manual data entry and potential transcription errors.
-* **Community health volunteer (CHV) data:** Excel spreadsheets with CHV demographic information, village assignments, and monthly malaria case reports. Data quality issues included duplicate CHV records and inconsistencies in village names.
-* **Malaria cases data:** District health information system (DHIS2) database with weekly malaria case reports from health facilities, including patient age, gender, and diagnostic test results. Challenges included potential reporting delays and inconsistencies in facility codes.
+#### 2.1.1 Insecticide-treated nets (ITNs) Data
 
-**2.2 Data Processing Workflow**
+Excel spreadsheets with records of ITN distribution campaigns, including village codes, household counts, and net quantities distributed. Inconsistencies observed in village code formats and occasional missing household countsو Lack of essential information like village names, team IDs. Incorrect spellings of village names of villages without code. Mismatches in submission_time formats. Changing in Form structure from 2023 onward
 
-**2.2.1 Data Cleaning and Transformation**
+**format:**
+
+```
+
+| Name                     | Type       | describtion                    |
+|------------------------- |----------- |------------------------------- |
+| report_target_type       | int        | is it within target or not     |
+| report_ppc_code          | int        | location code                  |
+| report_team_no           | int        | team no reached this location  |
+| day_reached              | varchar    | day this location reached      |
+| report_houses            | int        |                                |
+| report_residents         | int        |                                |
+| report_idps              | int        |                                |
+| report_idps_individuals  | int        |                                |
+| report_population        | int        |                                |
+| report_males             | int        |                                |
+| report_females           | int        |                                |
+| report_male_children     | int        |                                |
+| report_female_children   | int        |                                |
+| report_pregnants         | int        |                                |
+| report_itns_distributed  | int        |                                |
+| report_submission_time   | timestamp  |                                |
+| report_is_idps_camp      | bool       | is this location an idps_camp  |
+| report_tlcommenet        | text       | team leader comments           |
+
+```
+
+* **Impact of the inconsistencies in ITNs data:** the number of records affected or the degree of variation in data values.
+
+#### 2.1.2 Indoor Residual Spraying (IRS) Data
+
+CSV files with records of sprayed structures, spray dates, insecticides used, and personnel involved. Inconsistencies noted in date formats and variations in personnel names.
+
+* **Inconsistencies and Issues in IRS data:** Inconsistencies in itns data includes Lack of essential information like village names, team IDs. Incorrect spellings of village names, team leader names. Mismatches in date of submission_time. Changing in Form structure from 2023 onward.
+
+* **Impact of the inconsistencies in IRS data:** the number of records affected or the degree of variation in data values.
+
+#### 2.1.3 Larval Source Management (LSM) Data
+
+Paper-based forms with records of breeding site identification, treatment methods, and dates of intervention. Challenges included manual data entry and potential transcription errors.
+
+* **Inconsistencies and Issues in LSM data:** Inconsistencies in itns data includes Lack of essential information like village names, team IDs. Incorrect spellings of village names, team leader names. Mismatches in date of submission_time. Changing in Form structure from 2023 onward.
+
+* **Impact of the inconsistencies in LSM data:** the number of records affected or the degree of variation in data values.
+
+#### 2.1.4 Community Health Volunteer (CHV) Data
+
+Excel spreadsheets with CHV demographic information, village assignments, and monthly malaria case reports. Data quality issues included duplicate CHV records and inconsistencies in village names.
+
+* **Inconsistencies and Issues in CHV data:** Inconsistencies in itns data includes Lack of essential information like village names, team IDs. Incorrect spellings of village names, team leader names. Mismatches in date of submission_time. Changing in Form structure from 2023 onward.
+
+* **Impact of the inconsistencies in CHV data:** the number of records affected or the degree of variation in data values.
+
+#### 2.1.5 Malaria Cases Data
+
+District health information system (DHIS2) database with weekly malaria case reports from health facilities, including patient age, gender, and diagnostic test results. Challenges included potential reporting delays and inconsistencies in facility codes.
+
+* **Inconsistencies and Issues in Malaria cases data:** Inconsistencies in itns data includes Lack of essential information like village names, team IDs. Incorrect spellings of village names, team leader names. Mismatches in date of submission_time. Changing in Form structure from 2023 onward.
+
+* **Impact of the inconsistencies in Malaria cases data:** the number of records affected or the degree of variation in data values.
+
+#### 2.1.6 Administrative Data
+
+Were initially developed for administrative use, not for public health surveillance and have a larger coverage of population and Areas. For example, GIS (Geographical Information System/GPS/Geodata), Health Facilities information, Community Health Volunteers list, etc. connecting health facilities with their corresponding catchment villages.
+
+* **Inconsistencies and Issues in Administrative data:** Inconsistencies in itns data includes Lack of essential information like village names, team IDs. Incorrect spellings of village names, team leader names. Mismatches in date of submission_time. Changing in Form structure from 2023 onward.
+
+* **Impact of the inconsistencies in Administrative data:** the number of records affected or the degree of variation in data values.
+
+### 2.2 Processing Workflow
+
+**2.2.1 Data Cleaning and Transformation:**
 
 * **Standardization:** Harmonized village codes across datasets using a master village list.
 * **Error correction:** Identified and corrected typographical errors, inconsistencies in date formats, and missing values using a combination of automated checks and manual review.
 * **Outlier handling:** Flagged and investigated potential outliers in numerical data (e.g., unusually high or low numbers of nets distributed) to ensure data accuracy.
 
-**2.2.2 Master List Creation and Maintenance**
+**2.2.2 Master List Creation and Maintenance:**
 
 * **Village list:** Consolidated and standardized village names and codes from multiple sources, addressing duplicates and inconsistencies.
-* **Health facility list:** Created a master list of health facilities with unique codes, names, and geographic coordinates, merging data from DHIS2 and NMCP records.
+* **Health facility list (HF):** Created a master list of health facilities with unique codes, names, and geographic coordinates, merging HFs from EIdews Malaria cases reporting system and NMCP records.
+
+![Organization Unit](images/orgunits.png){ align=center, width="400" }
+
+![Merged Hfs](images/merged-hfs.png){ align=center, width="450" }
+
 * **CHV list:** Compiled a comprehensive list of CHVs with unique identifiers, demographic information, village assignments, and contact details, resolving duplicate records.
 
-**2.2.3 Data Merging and Integration**
+#### 2.2.3 Data Merging and Integration
 
 * **Mapping to master lists:** Linked activity data to corresponding master lists using village codes, health facility codes, and CHV identifiers.
 * **Resolving inconsistencies:** Addressed discrepancies in codes or names through manual verification and cross-referencing with original data sources.
 * **Data validation checks:** Implemented automated checks to ensure consistency between data sources, such as comparing ITN quantities with household counts and verifying CHV village assignments.
 
-**2.2.4 Data Quality Assessment**
+#### 2.2.4 Data Quality Assessment
 
 * **Profiling:** Analyzed data distributions, identified missing values, and assessed data completeness for each dataset.
 * **Validation checks:** Implemented logical checks for consistency (e.g., ensuring dates of IRS activities precede malaria case reports).
 * **Completeness analysis:** Calculated the percentage of missing values for key variables and investigated potential reasons for missing data.
 
-**2.3 Tools and Technologies**
+### 2.3 Tools and Technologies
 
 * **Data cleaning and integration:** Python (pandas, NumPy), OpenRefine
 * **Data profiling and validation:** Python (pandas-profiling, Great Expectations)
