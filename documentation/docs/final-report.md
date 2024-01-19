@@ -50,113 +50,105 @@ This report details the methodology, results, and impact of this data mapping pr
 
 The project integrated data from the following primary sources:
 
-#### 2.1.1 Insecticide-treated nets (ITNs) Data
-
-Excel spreadsheets with records of ITN distribution campaigns, including village codes, household counts, and net quantities distributed. Inconsistencies observed in village code formats and occasional missing household countsو Lack of essential information like village names, team IDs. Incorrect spellings of village names of villages without code. Mismatches in submission_time formats. Changing in Form structure from 2023 onward
-
-**format:**
-
-```
-
-| Name                     | Type       | describtion                    |
-|------------------------- |----------- |------------------------------- |
-| report_target_type       | int        | is it within target or not     |
-| report_ppc_code          | int        | location code                  |
-| report_team_no           | int        | team no reached this location  |
-| day_reached              | varchar    | day this location reached      |
-| report_houses            | int        |                                |
-| report_residents         | int        |                                |
-| report_idps              | int        |                                |
-| report_idps_individuals  | int        |                                |
-| report_population        | int        |                                |
-| report_males             | int        |                                |
-| report_females           | int        |                                |
-| report_male_children     | int        |                                |
-| report_female_children   | int        |                                |
-| report_pregnants         | int        |                                |
-| report_itns_distributed  | int        |                                |
-| report_submission_time   | timestamp  |                                |
-| report_is_idps_camp      | bool       | is this location an idps_camp  |
-| report_tlcommenet        | text       | team leader comments           |
-
-```
-
-* **Impact of the inconsistencies in ITNs data:** the number of records affected or the degree of variation in data values.
-
-#### 2.1.2 Indoor Residual Spraying (IRS) Data
-
-CSV files with records of sprayed structures, spray dates, insecticides used, and personnel involved. Inconsistencies noted in date formats and variations in personnel names.
-
-* **Inconsistencies and Issues in IRS data:** Inconsistencies in itns data includes Lack of essential information like village names, team IDs. Incorrect spellings of village names, team leader names. Mismatches in date of submission_time. Changing in Form structure from 2023 onward.
-
-* **Impact of the inconsistencies in IRS data:** the number of records affected or the degree of variation in data values.
-
-#### 2.1.3 Larval Source Management (LSM) Data
-
-Paper-based forms with records of breeding site identification, treatment methods, and dates of intervention. Challenges included manual data entry and potential transcription errors.
-
-* **Inconsistencies and Issues in LSM data:** Inconsistencies in itns data includes Lack of essential information like village names, team IDs. Incorrect spellings of village names, team leader names. Mismatches in date of submission_time. Changing in Form structure from 2023 onward.
-
-* **Impact of the inconsistencies in LSM data:** the number of records affected or the degree of variation in data values.
-
-#### 2.1.4 Community Health Volunteer (CHV) Data
-
-Excel spreadsheets with CHV demographic information, village assignments, and monthly malaria case reports. Data quality issues included duplicate CHV records and inconsistencies in village names.
-
-* **Inconsistencies and Issues in CHV data:** Inconsistencies in itns data includes Lack of essential information like village names, team IDs. Incorrect spellings of village names, team leader names. Mismatches in date of submission_time. Changing in Form structure from 2023 onward.
-
-* **Impact of the inconsistencies in CHV data:** the number of records affected or the degree of variation in data values.
-
-#### 2.1.5 Malaria Cases Data
-
-District health information system (DHIS2) database with weekly malaria case reports from health facilities, including patient age, gender, and diagnostic test results. Challenges included potential reporting delays and inconsistencies in facility codes.
-
-* **Inconsistencies and Issues in Malaria cases data:** Inconsistencies in itns data includes Lack of essential information like village names, team IDs. Incorrect spellings of village names, team leader names. Mismatches in date of submission_time. Changing in Form structure from 2023 onward.
-
-* **Impact of the inconsistencies in Malaria cases data:** the number of records affected or the degree of variation in data values.
-
-#### 2.1.6 Administrative Data
-
-Were initially developed for administrative use, not for public health surveillance and have a larger coverage of population and Areas. For example, GIS (Geographical Information System/GPS/Geodata), Health Facilities information, Community Health Volunteers list, etc. connecting health facilities with their corresponding catchment villages.
-
-* **Inconsistencies and Issues in Administrative data:** Inconsistencies in itns data includes Lack of essential information like village names, team IDs. Incorrect spellings of village names, team leader names. Mismatches in date of submission_time. Changing in Form structure from 2023 onward.
-
-* **Impact of the inconsistencies in Administrative data:** the number of records affected or the degree of variation in data values.
+* **ITN Distribution Data:**
+      - **Format:** Excel spreadsheets with village codes, household counts, net quantities, team, date, etc.
+      - **Inconsistencies:**
+        - Village code formats: Mixing numeric and alphanumeric formats, missing or incomplete codes.
+        - Data entry errors.
+        - Missing values, inconsistencies with reported village population.
+        - Mismatches in date of submission_time.
+* **IRS Data:**
+      - **Format:** Excel spreadsheets with sprayed structures, dates, insecticides, ...
+      - **Inconsistencies:**
+        - Village code formats: Mixing numeric and alphanumeric formats, missing or incomplete codes.
+        - Personnel names: Variations in spelling, abbreviations, missing names.
+        - Mismatches in date of submission_time
+* **LSM Data:**
+      - **Format:** Paper-based and Electronic forms with breeding site identification, treatment methods, dates.
+      - **Inconsistencies:**
+        - Transcription errors due to manual data entry.
+        - Incompatible data types for similar variables (e.g., income as categorical vs. continuous)
+        - Incomplete data: Missing information on breeding site type, treatment dosage, etc.
+* **CHV Data:**
+      - **Format:** Excel spreadsheets with CHV demographics, village assignments, malaria case reports.
+      - **Inconsistencies:**
+        - Duplicate CHV records due to name variations or reassignments.
+        - Village: Not coded and uses names having variations in spelling, missing or incomplete names.
+        - Missing info about time of assignment or withdrawal.
+* **Malaria Cases Data:**
+      - **Format:** NMCP database with Monthly case reports, EIdews database with Weekly case reports.
+      - **Inconsistencies:**
+        - Inconsistencies in coding systems, data entry errors, and missing values were common.
+        - Facility codes: Inaccurate or outdated facility codes impacting data aggregation.
+        - Different temporal collection: 2011-2016 Monthly, and 2017 onward is weekly.
+        - adding/removing dataelements and updating structure from year to another.
+        - changed sources of data: NMCP and then EIdews, resulting in discrepancies in health facility coding, often with varying levels of granularity
+* **Administrative Data:**
+      - **Format:** Country GIS Geodata database, Standard Health Facilities information, Excel spreadsheets Community Health Volunteers list.
+      - **Inconsistencies:**
+        - Outdated Country GIS Geodata database.
+        - Facility codes: Inaccurate or outdated facility codes impacting data aggregation.
+        - Duplicate of records in the GIS Geodata database.
+        - Other different inconsistencies.
+        - Duplicate Health Facilities records and inconsistencies in names required automated and manual careful resolution.
 
 ### 2.2 Processing Workflow
 
 **2.2.1 Data Cleaning and Transformation:**
 
-* **Standardization:** Harmonized village codes across datasets using a master village list.
-* **Error correction:** Identified and corrected typographical errors, inconsistencies in date formats, and missing values using a combination of automated checks and manual review.
-* **Outlier handling:** Flagged and investigated potential outliers in numerical data (e.g., unusually high or low numbers of nets distributed) to ensure data accuracy.
+* **Standardization:**
+      - Village codes: Harmonized across datasets using a master list, ensuring one-to-one mapping and eliminating ambiguities.
+      - Date formats: Converted to a consistent format (e.g., ISO 8601) for improved sorting and analysis.
+      - Personnel names: Standardized using string normalization techniques and cross-referencing with personnel records.
+      - Implement soundex and other phonetic matching techniques to identify potential duplicates and variations, followed by manual verification and standardization.
+      - Temporal Alignment: Align Malaria Cases data with varying temporal granularities using interpolation and/or aggregation techniques.
+* **Error Correction:**
+      - Applied techniques such as rule-based error correction, outlier detection, and imputation to address inconsistencies and missing values..
+      - Fuzzy matching to link village/HF names with similar spellings in the master list.
+      - Leverage Python library dateutil to parse various formats and convert to a consistent ISO 8601 standard.
+      - Utilize imputation techniques like mean/median imputation or K-Nearest Neighbors to fill in missing values based on context and relationships within the data.
+      - Manual review and correction of identified errors, ensuring data integrity.
+* **Outlier Handling:**
+      - Investigation of potential outliers (e.g., unusually high net distributions) through data visualization and cross-referencing with other sources.
+      - Contextualization of outliers based on local factors or data collection methods.
 
 **2.2.2 Master List Creation and Maintenance:**
 
 * **Village list:** Consolidated and standardized village names and codes from multiple sources, addressing duplicates and inconsistencies.
-* **Health facility list (HF):** Created a master list of health facilities with unique codes, names, and geographic coordinates, merging HFs from EIdews Malaria cases reporting system and NMCP records.
+* **Health facility list (HF):**
+      - A comprehensive list of health facilities was created with unique codes, names, and geographic coordinates, merging HFs from EIdews Malaria cases reporting system and NMCP records to provide a clear picture of health infrastructure.
+      - Checked and updated the list through collaboration with local authorities and community to reflect changes in facility closures, expansions, or changes in operational status.
 
 ![Organization Unit](images/orgunits.png){ align=center, width="400" }
 
 ![Merged Hfs](images/merged-hfs.png){ align=center, width="450" }
 
-* **CHV list:** Compiled a comprehensive list of CHVs with unique identifiers, demographic information, village assignments, and contact details, resolving duplicate records.
+* **CHV list:**
+      - Compiled a comprehensive list of CHVs with unique identifiers, demographic information, village assignments, and contact details, resolving duplicate records.
+      - Implement de-duplication algorithms to identify and merge duplicate CHV records based on unique identifiers, demographics, and village assignments.
+      - Cross-reference CHVs with village master list to ensure accurate village assignments and avoid inconsistencies.
 
 #### 2.2.3 Data Merging and Integration
 
 * **Mapping to master lists:** Linked activity data to corresponding master lists using village codes, health facility codes, and CHV identifiers.
+* **Resolving Record Linkage Issues:** Employed probabilistic matching techniques to account for variations in names and addresses, with manual verification for high-confidence matches.
 * **Resolving inconsistencies:** Addressed discrepancies in codes or names through manual verification and cross-referencing with original data sources.
-* **Data validation checks:** Implemented automated checks to ensure consistency between data sources, such as comparing ITN quantities with household counts and verifying CHV village assignments.
+* **Data validation checks:** Implemented automated checks to ensure consistency between data sources, such as comparing ITN quantities with household counts and verifying CHV village assignments, proactively identifying and addressing potential errors.
 
 #### 2.2.4 Data Quality Assessment
 
-* **Profiling:** Analyzed data distributions, identified missing values, and assessed data completeness for each dataset.
-* **Validation checks:** Implemented logical checks for consistency (e.g., ensuring dates of IRS activities precede malaria case reports).
-* **Completeness analysis:** Calculated the percentage of missing values for key variables and investigated potential reasons for missing data.
+* **Data lineage tracking:** Tracing the origin and transformations of each data point to ensure transparency and auditability.
+* **Validation checks:** IImplement domain-specific validation rules (e.g., checking if reported net quantities fall within plausible ranges for village sizes). Verified data integrity through cross-referencing with external sources (e.g., population data).
+* **Completeness Analysis:** Calculate the percentage of missing values for key variables and analyze the distribution of missingness across different datasets. Identify patterns and potential reasons for missing data (e.g., reporting delays, data entry challenges). Documented for improved future training programs to improve data collection and reporting practices.
 
 ### 2.3 Tools and Technologies
 
-* **Data cleaning and integration:** Python (pandas, NumPy), OpenRefine
-* **Data profiling and validation:** Python (pandas-profiling, Great Expectations)
-* **Data storage:** PostgreSQL database
-* **Data visualization:** Tableau
+* **Data cleaning and integration:** Python (pandas, NumPy), Pentaho Data Integration and MetaData Management, OpenRefine, facilitated automated data manipulation and cleaning tasks. SQL, Excel.
+* **Data storage:** PostgreSQL database with version control and audit trails.
+* **Data visualization:** Power BI enabled the creation of interactive dashboards and reports for data visualization and analysis.
+
+### Additional Enhancements
+
+* **Diagrams:** Visually depict the data processing workflow, master list structures, and relationships between datasets.
+* **Tables:** Summarize data quality metrics, such as completeness rates and error rates, for each dataset and stage of the process.
+* **Code Snippets:** Provide examples of key data cleaning and transformation techniques, demonstrating practical implementation.
