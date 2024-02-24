@@ -3,3 +3,7 @@ docs/report-staging.md
 docs/*.docx
 job/
 job/*
+docs/database/referencing_in_prompts.md
+docs/database/final_dashboard_items.md
+docs/database/dashboard.md
+docs/warehouses/*
