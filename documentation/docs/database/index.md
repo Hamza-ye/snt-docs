@@ -1,8 +1,8 @@
 # DB
 
-## IRS/ITNs Database structure documenting
+## IRS Database structure documenting
 
-The provided SQL schema outlines a database structure designed to support the management and tracking of National Malaria Control Program (NMCP) campaigns, specifically focusing on Indoor Residual Spraying (IRS) and Insecticide-Treated Nets (ITNs) distributions. Here's a detailed description of the database schema based on the revised comments:
+The provided SQL schema outlines a database structure designed to support the management and tracking of National Malaria Control Program (NMCP) campaigns, currently specifically focusing on Indoor Residual Spraying (IRS). Here's a detailed description of the database schema based on the revised comments:
 
 ### Overview
 
@@ -62,6 +62,8 @@ In the daily Operational plan table A team will cover multiple locations for N-d
 
 **Important meanings and terminology for progress_status:**
 
+When Estimating futures of any thing progress_status is usually need to be taken into account:
+
 - for `progress_status` in  of each sent report:
   - `full`: activity completed in this target with full coverage.
   - `partial`: activity completed in this target with partial coverage.
@@ -71,29 +73,6 @@ In the daily Operational plan table A team will cover multiple locations for N-d
 ### The Database tables SQL creation
 
 ```sql
-
--- `m_date_dimension`: date dimension table
-
-CREATE TABLE 
-    m_date_dimension 
-    ( 
-        date_id              BIGINT NOT NULL, 
-        the_date             TIMESTAMP(6) WITHOUT TIME ZONE, 
-        date_year            INTEGER, 
-        CONSTRAINT dim_date_pkey PRIMARY KEY (date_id), 
-    );
-
--- `m_campaigntypes`: (e.g., ITNs, IRS)
-
-CREATE TABLE 
-    m_campaigntypes 
-    ( 
-        campaign_type_id INTEGER DEFAULT nextval('m_campaign_type_serial_seq'::regclass) NOT NULL, 
-        Campaign_type    CHARACTER VARYING(255) NOT NULL, 
-        description      CHARACTER VARYING(255), 
-        CONSTRAINT campaign_type_id_ux PRIMARY KEY (campaign_type_id), 
-        CONSTRAINT campaign_type_ux UNIQUE ("Campaign_type") 
-    );
 
 -- `m_campaign`: Stores information about each campaign. It supports multiple types of campaigns (e.g., ITNs with `campaign_type_id`=1, IRS with `campaign_type_id`=2), allowing the database to track various intervention strategies.
 
@@ -165,7 +144,7 @@ CREATE TABLE c_warehouses_distribution_points
     REFERENCES "c_region" ("region_id")
 );
 
--- `c_team`: Represents teams tasked with either spraying (IRS) or distributing nets (ITNs), including team leaders and supervisors. The crucial team_type field differentiates between foreman teams directly involved in spraying and supervisor teams overseeing multiple foreman teams and consolidating their reports. it has either [FOREMAN, SUPERVISOR].
+-- `c_team`: Represents teams tasked with either spraying (IRS), including team leaders and supervisors. The crucial team_type field differentiates between foreman teams directly involved in spraying and supervisor teams overseeing multiple foreman teams and consolidating their reports. it has either [FOREMAN, SUPERVISOR].
 
 CREATE TABLE c_team
 (
@@ -180,34 +159,10 @@ CREATE TABLE c_team
     REFERENCES "c_warehouses_distribution_points" ("wh_id")
 );
 
--- `c_targets_master`: moving target_warehouse_id, target_location_id, target_region_id from c_daily_targets to this table, this would contain the target resulted from planning phase, after choosing locations and deciding on the regions and warehouses/distribution-point 
-
-CREATE TABLE 
-    c_targets_master 
-    ( 
-        target_id          BIGINT DEFAULT nextval('c_targets_master_serial_seq'::regclass) NOT NULL, 
-        target_warehouse_id BIGINT NOT NULL,
-        target_location_id  BIGINT NOT NULL, 
-        target_region_id    BIGINT,
-        target_field_code   BIGINT NOT NULL, 
-        location_longitude DOUBLE PRECISION, 
-        location_latitude DOUBLE PRECISION, 
-        PRIMARY KEY (target_id), 
-        CONSTRAINT c_targets_master_target_location_id_fkey FOREIGN KEY (target_location_id) 
-        REFERENCES "m_villages_locations" ("location_id"), 
-        CONSTRAINT c_targets_master_target_region_id_fkey FOREIGN KEY (target_region_id) 
-        REFERENCES "c_region" ("region_id"), 
-        CONSTRAINT c_targets_master_target_warehouse_id_fkey FOREIGN KEY (target_warehouse_id) 
-        REFERENCES "c_warehouses_distribution_points" ("wh_id"), 
-        UNIQUE (target_region_id, target_warehouse_id, target_location_id)
-        UNIQUE (target_region_id, target_warehouse_id, target_field_code)
-    );
+-- `c_targets_master`: 
     
--- `c_daily_targets`: 
+-- `c_daily_teams_targets`: 
 -- This table defines the operational plan for each day within an IRS campaign.
--- It links targets from `c_targets_master` to specific teams (`c_team`) on specific dates (`m_date_dimension`).
--- Estimated resources and coverage are planned here, but actual execution details are captured in `c_kobo_irs_team_main`.
-
 -- Key points:
 -- * Estimated values based on planning, actual execution details in `c_kobo_irs_team_main`.
 -- * Divergences from planned teams/dates captured in `c_kobo_irs_team_main`.
@@ -227,24 +182,43 @@ CREATE TABLE
 --     in a day. Used to assess workload and monitor progress.
 -- target_area_per_sachet: Estimated Area covered Per Sachet.
 
-CREATE TABLE c_daily_targets
-(
-    target_team_id                BIGINT NOT NULL,
-    target_population             DOUBLE PRECISION,
-    target_day_date_id            INTEGER NOT NULL,
-    target_id            BIGINT NOT NULL,
-    target_houses                 DOUBLE PRECISION,
-    target_room_per_house          DECIMAL NOT NULL,
-    target_room_avg_area          DECIMAL NOT NULL,
-    target_daily_area_coverage_rate INTEGER NOT NULL,
-    target_area_per_sachet         INTEGER,
-    CONSTRAINT c_targets_master_id_fkey FOREIGN KEY (target_id) 
-    REFERENCES "c_targets_master" ("target_id"),
-    CONSTRAINT c_villagetargetinfo_copy1_target_team_id_fkey FOREIGN KEY (target_team_id) 
-    REFERENCES "c_team" ("team_id"),
-    CONSTRAINT c_villagetargetinfo_day_date_id_fkey FOREIGN KEY (target_day_date_id) 
-    REFERENCES "m_date_dimension" ("date_id")
-);
+CREATE TABLE 
+    c_daily_teams_targets 
+    ( 
+        target_id   BIGINT DEFAULT nextval('c_daily_team_targets_target_id_seq'::regclass) NOT NULL, 
+        target_warehouse_id BIGINT NOT NULL, 
+        target_location_id  BIGINT NOT NULL, 
+        target_region_id    BIGINT, 
+        target_field_code   BIGINT NOT NULL, 
+        target_team_id      BIGINT NOT NULL, 
+        target_day_date_id  INTEGER NOT NULL, 
+        target_population DOUBLE PRECISION, 
+        target_houses DOUBLE PRECISION, 
+        target_room_per_house           NUMERIC, 
+        target_room_avg_area            NUMERIC, 
+        target_daily_area_coverage_rate INTEGER, 
+        target_area_per_sachet          INTEGER, 
+        location_longitude DOUBLE PRECISION, 
+        location_latitude DOUBLE PRECISION, 
+        target_campaign_id BIGINT, 
+        PRIMARY KEY (target_id), 
+        CONSTRAINT fk_target_location_id FOREIGN KEY (target_location_id) REFERENCES 
+        "m_villages_locations" ("location_id"), 
+        CONSTRAINT fk_target_region_id FOREIGN KEY (target_region_id) REFERENCES "c_region" 
+        ("region_id"), 
+        CONSTRAINT fk_target_warehouse_id FOREIGN KEY (target_warehouse_id) REFERENCES 
+        "c_warehouses_distribution_points" ("wh_id"), 
+        CONSTRAINT fk_target_team_id FOREIGN KEY (target_team_id) REFERENCES "c_team" ("team_id"), 
+        CONSTRAINT fk_target_day_date_id FOREIGN KEY (target_day_date_id) REFERENCES 
+        "m_date_dimension" ("date_id"), 
+        CONSTRAINT fk_target_campaign_id FOREIGN KEY (target_campaign_id) REFERENCES "m_campaign" 
+        ("campaign_id"), 
+        UNIQUE (target_id), 
+        CONSTRAINT c_daily_teams_wh_code_team_day_multiple_u UNIQUE (target_warehouse_id, 
+        target_team_id, target_day_date_id, target_field_code), 
+        CONSTRAINT c_daily_teams_camp_code_team_day_multiple_u UNIQUE (target_field_code, 
+        target_team_id, target_day_date_id, target_campaign_id) 
+    );
 
 -- `c_kobo_irs_team_main`:
 -- This table captures detailed field reports submitted by spray teams during IRS campaigns.
@@ -303,10 +277,10 @@ CREATE TABLE c_kobo_irs_team_main
     _database_created_at          TIMESTAMP(6) WITHOUT TIME ZONE DEFAULT CURRENT_TIMESTAMP,
     CONSTRAINT c_kobo_irs_team_main_2_pkey PRIMARY KEY (_id),
     CONSTRAINT c_irs_kobo2_day_date_id_fk FOREIGN KEY (day_date_id) REFERENCES "m_date_dimension" ("date_id"),
-    CONSTRAINT c_irs_kobo2_target_id_fk FOREIGN KEY (target_id) REFERENCES "c_targets_master" ("target_id"),
+    CONSTRAINT c_irs_kobo2_target_id_fk FOREIGN KEY (target_id) REFERENCES "c_daily_teams_targets" ("target_id"),
     CONSTRAINT c_irs_kobo2_team_id_fk FOREIGN KEY (report_team_id) REFERENCES "c_team" ("team_id"),
     CONSTRAINT c_irs_kobo_kobo2_uuid_u UNIQUE (_uuid)
 );
 
--- Note: Additional tables for warehouse balance, movements, c_kobo_itns_team_main for ITNs campaigns data, districts etc., are implied but not listed here for brevity.
+-- Note: This is the crucial tables, additional tables are implied but not listed here for brevity.
 ```
