@@ -2,7 +2,7 @@
 
 ## IRS Database structure documenting
 
-The provided SQL schema outlines a database structure designed to support the management and tracking of National Malaria Control Program (NMCP) campaigns, currently specifically focusing on Indoor Residual Spraying (IRS). Here's a detailed description of the database schema based on the revised comments:
+The provided SQL schema outlines a database structure designed to support the management and tracking of National Malaria Control Program (NMCP) campaigns such as ITNs, IRS, AMD and other. Here's a detailed description of the database schema based on the revised comments:
 
 ### Overview
 
