@@ -67,8 +67,8 @@ When Estimating futures of any thing progress_status is usually need to be taken
 - for `progress_status` in  of each sent report:
   - `full`: activity completed in this target with full coverage.
   - `partial`: activity completed in this target with partial coverage.
-  - `non_sprayed_for_reason`: activity completed in this target with 0 coverage.
   - `ongoing`: activity still not completed yet.
+  - `NotTargeted, the reason`: activity still not completed yet.
 
 ### The Database tables SQL creation
 
